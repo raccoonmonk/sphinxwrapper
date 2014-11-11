@@ -1,0 +1,4 @@
+sphinxwrapper
+=============
+
+Wrapper for pocketsphinx
