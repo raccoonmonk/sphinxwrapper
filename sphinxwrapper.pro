@@ -2,8 +2,6 @@ TEMPLATE = lib
 CONFIG += staticlib
 CONFIG -= qt
 
-TARGET = sphinxwrapper
-
 unix {
   LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm
   INCLUDEPATH += /usr/local/include/sphinxbase
@@ -25,3 +23,13 @@ qtcAddDeployment()
 HEADERS += \
     sphinxwrapper.h
 
+defineTest(copyDir) {
+    dirtocopy = $$1
+
+    QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$dirtocopy $$OUT_PWD
+#    message($$QMAKE_POST_LINK)
+    export(QMAKE_POST_LINK)
+}
+
+#copy model dir
+copyDir($$PWD/model)
