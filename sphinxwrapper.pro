@@ -8,13 +8,15 @@ unix {
   INCLUDEPATH += /usr/local/include/pocketsphinx
 
 }else:win32 {
+  #TODO add local pre-built libs and include headers
   INCLUDEPATH += /local/include
+  INCLUDEPATH += /local/include/sphinxbase
+  INCLUDEPATH += /local/include/pocketsphinx
   LIBS += -L/c/tmp/sphinx_wrapper/lib32
   LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm -liconv
 }
 
 SOURCES += \
-#    main.cpp \
     sphinxwrapper.cpp
 
 include(deployment.pri)
@@ -27,7 +29,6 @@ defineTest(copyDir) {
     dirtocopy = $$1
 
     QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$dirtocopy $$OUT_PWD
-#    message($$QMAKE_POST_LINK)
     export(QMAKE_POST_LINK)
 }
 
