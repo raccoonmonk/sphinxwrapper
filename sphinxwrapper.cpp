@@ -1,6 +1,6 @@
 #include <iostream>
 #include "sphinxwrapper.h"
-#define MODELDIR "./model"
+#define MODELDIR "../sphinxwrapper/model"
 
 SphinxWrapper::SphinxWrapper()
 {
