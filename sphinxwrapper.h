@@ -7,7 +7,6 @@ class SphinxWrapper
 {
 public:
   SphinxWrapper();
-  ~SphinxWrapper();
 
   /*!
    * \brief recognize speech in the audio file

@@ -4,36 +4,33 @@
 
 SphinxWrapper::SphinxWrapper()
 {
+}
+
+std::string SphinxWrapper::recognize(const std::string & filename) {
   config = cmd_ln_init(NULL, ps_args(), TRUE,
            "-hmm", MODELDIR,
            "-lm", MODELDIR "/turtle.DMP",
            "-dict", MODELDIR "/turtle.dic",
            NULL);
-}
-SphinxWrapper::~SphinxWrapper() {
-  fclose(fh);
-  ps_free(ps);
-}
-
-std::string SphinxWrapper::recognize(const std::string & filename) {
   if (config == NULL)
       return NULL;
-    ps = ps_init(config);
-    if (ps == NULL)
-      return NULL;
+  ps = ps_init(config);
+  if (ps == NULL)
+    return NULL;
 
-    fh = fopen(filename.data(), "rb");
-    if (fh == NULL) {
-      return std::string("fail to open file");
-    }
+  fh = fopen(filename.data(), "rb");
+  if(fh == NULL)
+    return std::string("fail to open file");
 
-    rv = ps_decode_raw(ps, fh, "goforward", -1);
-    if (rv < 0)
-      return NULL;
-    hyp = ps_get_hyp(ps, &score, &uttid);
-    if (hyp == NULL)
-      return NULL;
-    return std::string(hyp);
+  rv = ps_decode_raw(ps, fh, "goforward", -1);
+  if(rv < 0)
+    return NULL;
+  hyp = ps_get_hyp(ps, &score, &uttid);
+  if (hyp == NULL)
+    return NULL;
+  fclose(fh);
+  ps_free(ps);
+  return std::string(hyp);
 //    std::cout << "Recognized:" << hyp << std::endl;
 
           fseek(fh, 0, SEEK_SET);
@@ -51,6 +48,8 @@ std::string SphinxWrapper::recognize(const std::string & filename) {
     hyp = ps_get_hyp(ps, &score, &uttid);
     if (hyp == NULL)
       return NULL;
+  fclose(fh);
+  ps_free(ps);
   return std::string(hyp);
 //  std::cout << "Recognized:" << hyp << std::endl;
 }
