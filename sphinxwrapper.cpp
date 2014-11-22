@@ -7,49 +7,31 @@ SphinxWrapper::SphinxWrapper()
 }
 
 std::string SphinxWrapper::recognize(const std::string & filename) {
+  std::string result("ERROR. Something went wrong.");
   config = cmd_ln_init(NULL, ps_args(), TRUE,
            "-hmm", MODELDIR,
            "-lm", MODELDIR "/turtle.DMP",
            "-dict", MODELDIR "/turtle.dic",
            NULL);
   if (config == NULL)
-      return NULL;
+      return result;
   ps = ps_init(config);
   if (ps == NULL)
-    return NULL;
+    return result;
 
   fh = fopen(filename.data(), "rb");
   if(fh == NULL)
-    return std::string("fail to open file");
+    return result;
 
   rv = ps_decode_raw(ps, fh, "goforward", -1);
   if(rv < 0)
-    return NULL;
+    return result;
   hyp = ps_get_hyp(ps, &score, &uttid);
   if (hyp == NULL)
-    return NULL;
-  fclose(fh);
-  ps_free(ps);
-  return std::string(hyp);
-//    std::cout << "Recognized:" << hyp << std::endl;
+    return result;
 
-          fseek(fh, 0, SEEK_SET);
-          rv = ps_start_utt(ps, "goforward");
-    if (rv < 0)
-      return NULL;
-          while (!feof(fh)) {
-              size_t nsamp;
-              nsamp = fread(buf, 2, 512, fh);
-              rv = ps_process_raw(ps, buf, nsamp, FALSE, FALSE);
-          }
-          rv = ps_end_utt(ps);
-    if (rv < 0)
-      return NULL;
-    hyp = ps_get_hyp(ps, &score, &uttid);
-    if (hyp == NULL)
-      return NULL;
+  result = std::string(hyp);
   fclose(fh);
   ps_free(ps);
-  return std::string(hyp);
-//  std::cout << "Recognized:" << hyp << std::endl;
+  return result;
 }
