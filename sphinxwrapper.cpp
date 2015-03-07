@@ -1,24 +1,22 @@
-#include <iostream>
 #include "sphinxwrapper.h"
-#define MODELDIR "../sphinxwrapper/model"
 
-SphinxWrapper::SphinxWrapper()
+SphinxWrapper::SphinxWrapper(const char * modeldir)
 {
+  m_modeldir = new char[strlen(modeldir)];
+  strcpy(m_modeldir, modeldir);
+}
+
+SphinxWrapper::~SphinxWrapper() {
+  delete [] m_modeldir;
 }
 
 std::string SphinxWrapper::recognize(const std::string & filename) {
   std::string result("ERROR. Something went wrong.");
-  config = cmd_ln_init(NULL, ps_args(), TRUE,
-           "-hmm", MODELDIR,
-           "-lm", MODELDIR "/turtle.DMP",
-           "-dict", MODELDIR "/turtle.dic",
-           NULL);
-  if (config == NULL)
-      return result;
-  ps = ps_init(config);
-  if (ps == NULL)
+
+  if (init())
     return result;
 
+  FILE * fh;
   fh = fopen(filename.data(), "rb");
   if(fh == NULL)
     return result;
@@ -30,23 +28,16 @@ std::string SphinxWrapper::recognize(const std::string & filename) {
   if (hyp == NULL)
     return result;
 
-  result = std::string(hyp);
   fclose(fh);
+  result = std::string(hyp);
   ps_free(ps);
   return result;
 }
 
 std::string SphinxWrapper::recognize(const char * buf, int size) {
   std::string result("ERROR. Something went wrong.");
-  config = cmd_ln_init(NULL, ps_args(), TRUE,
-           "-hmm", MODELDIR,
-           "-lm", MODELDIR "/turtle.DMP",
-           "-dict", MODELDIR "/turtle.dic",
-           NULL);
-  if (config == NULL)
-      return result;
-  ps = ps_init(config);
-  if (ps == NULL)
+
+  if (init())
     return result;
 
   rv = ps_start_utt(ps, NULL);
@@ -59,7 +50,23 @@ std::string SphinxWrapper::recognize(const char * buf, int size) {
   hyp = ps_get_hyp(ps, &score, &uttid);
   if (hyp == NULL)
     return result;
+
   result = std::string(hyp);
   ps_free(ps);
   return result;
 }
+
+inline bool SphinxWrapper::init() {
+  config = cmd_ln_init(NULL, ps_args(), TRUE,
+           "-hmm", m_modeldir,
+           "-lm", std::string(m_modeldir).append("/turtle.DMP").data(),
+           "-dict", std::string(m_modeldir).append("/turtle.dic").data(),
+           NULL);
+  if (config == NULL)
+      return 1;
+  ps = ps_init(config);
+  if (ps == NULL)
+    return 1;
+  return 0;
+}
+

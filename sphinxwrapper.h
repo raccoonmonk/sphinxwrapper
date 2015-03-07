@@ -1,12 +1,18 @@
-#ifndef SPHINXWRAPPER_H
-#define SPHINXWRAPPER_H
+#pragma once
+
 #include <pocketsphinx/pocketsphinx.h>
 #include <string>
 
 class SphinxWrapper
 {
 public:
-  SphinxWrapper();
+
+  /*!
+   * \brief SphinxWrapper
+   * \param modeldir Path to the speech model directory
+   */
+  explicit SphinxWrapper(const char * modeldir);
+  ~SphinxWrapper();
 
   /*!
    * \brief recognize speech from an audio file
@@ -14,7 +20,6 @@ public:
    * \return std::string with recognized text
    */
   std::string recognize(const std::string & filename);
-
   /*!
    * \brief recognize speech from a block of memory
    * \param buf pointer to a data block
@@ -24,12 +29,12 @@ public:
   std::string recognize(const char * buf, int size);
 
 private:
+  bool init();
+
   ps_decoder_t *ps;
   cmd_ln_t *config;
-  FILE *fh;
-  char const *hyp, *uttid;
+  const char *hyp, *uttid;
   int rv;
   int32 score;
+  char * m_modeldir; //!< Path to model directory
 };
-
-#endif // SPHINXWRAPPER_H
