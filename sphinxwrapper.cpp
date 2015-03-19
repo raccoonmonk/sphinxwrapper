@@ -1,4 +1,5 @@
 #include "sphinxwrapper.h"
+#include <pocketsphinx.h>
 
 SphinxWrapper::SphinxWrapper(const char * modeldir)
 {
@@ -13,7 +14,12 @@ SphinxWrapper::~SphinxWrapper() {
 std::string SphinxWrapper::recognize(const std::string & filename) {
   std::string result("ERROR. Something went wrong.");
 
-  if (init())
+  ps_decoder_t * ps = NULL;
+  int32 score = 0;
+  const char *hyp = NULL, *uttid = NULL;
+  int rv = 0;
+
+  if (init((void * &)ps))
     return result;
 
   FILE * fh;
@@ -37,7 +43,12 @@ std::string SphinxWrapper::recognize(const std::string & filename) {
 std::string SphinxWrapper::recognize(const char * buf, int size) {
   std::string result("ERROR. Something went wrong.");
 
-  if (init())
+  ps_decoder_t * ps = NULL;
+  int32 score = 0;
+  const char *hyp = NULL, *uttid = NULL;
+  int rv = 0;
+
+  if (init((void * &)ps))
     return result;
 
   rv = ps_start_utt(ps, NULL);
@@ -56,8 +67,9 @@ std::string SphinxWrapper::recognize(const char * buf, int size) {
   return result;
 }
 
-inline bool SphinxWrapper::init() {
-  config = cmd_ln_init(NULL, ps_args(), TRUE,
+inline bool SphinxWrapper::init(void * & ps_ptr) {
+  ps_decoder_t * ps = NULL;
+  cmd_ln_t * config = cmd_ln_init(NULL, ps_args(), TRUE,
            "-hmm", m_modeldir,
            "-lm", std::string(m_modeldir).append("/turtle.DMP").data(),
            "-dict", std::string(m_modeldir).append("/turtle.dic").data(),
@@ -67,6 +79,6 @@ inline bool SphinxWrapper::init() {
   ps = ps_init(config);
   if (ps == NULL)
     return 1;
+  ps_ptr = (void *)ps;
   return 0;
 }
-

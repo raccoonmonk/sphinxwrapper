@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pocketsphinx/pocketsphinx.h>
 #include <string>
 
 class SphinxWrapper
@@ -20,6 +19,7 @@ public:
    * \return std::string with recognized text
    */
   std::string recognize(const std::string & filename);
+
   /*!
    * \brief recognize speech from a block of memory
    * \param buf pointer to a data block
@@ -29,12 +29,7 @@ public:
   std::string recognize(const char * buf, int size);
 
 private:
-  bool init();
+  bool init(void * &); //!< Init ps_decoder_t*
 
-  ps_decoder_t *ps;
-  cmd_ln_t *config;
-  const char *hyp, *uttid;
-  int rv;
-  int32 score;
   char * m_modeldir; //!< Path to model directory
 };
