@@ -9,10 +9,12 @@ unix {
 
 }else:win32 {
   #TODO add local pre-built libs and include headers
-  INCLUDEPATH += /local/include
-  INCLUDEPATH += /local/include/sphinxbase
-  INCLUDEPATH += /local/include/pocketsphinx
-  LIBS += -L/c/tmp/sphinx_wrapper/lib32
+  
+  INCLUDEPATH += $$PWD/libwin32sphinx08stable/include
+  INCLUDEPATH += $$PWD/libwin32sphinx08stable/include/sphinxbase
+  INCLUDEPATH += $$PWD/libwin32sphinx08stable/include/pocketsphinx
+  LIBS += -L$$PWD/libwin32sphinx08stable
+  
   LIBS += -lpocketsphinx -lsphinxbase -lsphinxad -lpthread -lm -liconv
 }
 
