@@ -1,5 +1,6 @@
 #include "sphinxwrapper.h"
 #include <pocketsphinx.h>
+#include <err.h>
 
 SphinxWrapper::SphinxWrapper(const char * modeldir)
 {
@@ -69,6 +70,7 @@ std::string SphinxWrapper::recognize(const char * buf, int size) {
 
 inline bool SphinxWrapper::init(void * & ps_ptr) {
   ps_decoder_t * ps = NULL;
+  err_set_logfp(NULL); //disable logging
   cmd_ln_t * config = cmd_ln_init(NULL, ps_args(), TRUE,
            "-hmm", m_modeldir,
            "-lm", std::string(m_modeldir).append("/turtle.DMP").data(),
