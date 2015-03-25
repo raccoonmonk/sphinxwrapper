@@ -29,7 +29,10 @@ public:
   std::string recognize(const char * buf, int size);
 
 private:
-  bool init(void * &); //!< Init ps_decoder_t*
+  bool init(); //!< Init ps_decoder_t*
+  std::string & getResultAndClean(std::string & str);
 
   char * m_modeldir; //!< Path to model directory
+  void * m_config;
+  void * m_ps;
 };
